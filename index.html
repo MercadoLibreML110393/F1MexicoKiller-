@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Browser Cache မသိမ်းဆည်းစေရန် ထည့်သွင်းထားသော Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <title>My Web Dashboard</title>
     <style>
         * {
@@ -183,7 +189,7 @@
     <div class="sidebar">
         <div class="sidebar-top">
             <div class="brand-header">
-                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="Logo">
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png?v=1.0.0" alt="Logo">
                 <span>My Web<br>Dashboard</span>
             </div>
 
@@ -242,6 +248,18 @@
                         VIP
                     </div>
                 </li>
+                <li class="menu-item">
+                    <div class="menu-link" onclick="loadFrame('https://kokhant300532-ship-it.github.io/Bank-error-noti---22/', this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        Bank error noti 22
+                    </div>
+                </li>
+                <li class="menu-item">
+                    <div class="menu-link" onclick="loadFrame('https://kokhant300532-ship-it.github.io/VIP-noti-card/', this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                        VIP noti card
+                    </div>
+                </li>
             </ul>
         </div>
 
@@ -254,19 +272,27 @@
     </div>
 
     <div class="main-content">
-        <iframe id="main-iframe" src="https://kokhant300532-ship-it.github.io/KK/"></iframe>
+        <iframe id="main-iframe" src=""></iframe>
     </div>
 
     <script>
         const iframe = document.getElementById('main-iframe');
         const menuContainer = document.getElementById('menu-container');
 
-        // Iframe ၏ URL ကို တိုက်ရိုက်ပြောင်းပေးမည့် Function
-        function loadFrame(url, element) {
-            // Iframe src ကို တိုက်ရိုက် အစားထိုးခြင်း
-            iframe.src = url;
+        // Dynamic Cache Busting Parameter ထုတ်ပေးသည့် Function
+        function getCacheBuster() {
+            return new Date().getTime();
+        }
 
-            // Active Highlight ချိန်ခြင်း
+        // Cache မငြိဘဲ တိုက်ရိုက် အသစ်ပြောင်းစေရန် iFrame ခေါ်ယူသည့် Function
+        function loadFrame(baseUrl, element) {
+            // URL ထဲသို့ Dynamic Timestamp Parameter (_t=...) ထည့်ပေးခြင်း
+            const separator = baseUrl.includes('?') ? '&' : '?';
+            const cacheBustedUrl = `${baseUrl}${separator}_t=${getCacheBuster()}`;
+
+            iframe.src = cacheBustedUrl;
+
+            // Active State ချိန်ညှိခြင်း
             document.querySelectorAll('.menu-link').forEach(link => {
                 link.classList.remove('active');
             });
@@ -286,7 +312,7 @@
             });
         }
 
-        // Page အသစ်ထည့်ခြင်း
+        // Custom Page အသစ်ထည့်ခြင်း
         function addCustomPage() {
             const titleInput = document.getElementById('page-title');
             const urlInput = document.getElementById('page-url');
@@ -323,7 +349,7 @@
             menuContainer.appendChild(li);
         }
 
-        // Page ပြန်ဖျက်ခြင်း
+        // Custom Page ပြန်ဖျက်ခြင်း
         function removeCustomPage(index) {
             let savedPages = JSON.parse(sessionStorage.getItem('dashboard_custom_pages')) || [];
             savedPages.splice(index, 1);
@@ -331,7 +357,8 @@
             loadCustomPages();
         }
 
-        // Initialize Page
+        // Initial Page Load (အစတွင် Default Frame ကို Dynamic Timestamp ဖြင့် ခေါ်ယူခြင်း)
+        loadFrame('https://kokhant300532-ship-it.github.io/KK/', document.querySelector('.menu-link.active'));
         loadCustomPages();
     </script>
 </body>
